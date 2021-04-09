@@ -1,0 +1,47 @@
+Link{
+  color: White;
+  text-decoration: none;
+}
+.profileIcon{
+  background-color: #09b7ec;
+  border:none;
+  border-radius: 80px;
+  padding:8% 8% 8% 8%;
+  color:white;
+}
+.accountIcon{
+  margin-left: 84%;
+}
+.userInfo{
+  margin-left: 52%;
+  margin-top: -50px;
+  font-size: 65%;
+}
+
+.seeRadiologo{
+  width:15%;
+}
+
+
+@media only screen and (max-width: 800px) {
+  .seeRadiologo{
+    width:30%;
+    float:left
+  }
+  .accountIcon{
+    margin-left: 87%;
+    margin-top:-9%;
+  }
+  .userInfo{
+    display: none;
+  }
+  .profileIcon{
+    background-color: #09b7ec;
+    border:none;
+    border-radius: 80px;
+    padding:20% 20% 20% 20%;
+    font-size:12px;
+    margin-left: -15%;
+  }
+}
+

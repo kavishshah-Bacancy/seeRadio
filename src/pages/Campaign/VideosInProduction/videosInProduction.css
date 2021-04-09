@@ -1,0 +1,13 @@
+.btnPageSize{
+  color:black;
+  background-color: white;
+  border: none;
+}
+.btnPageSize:active{
+  background-color: darkcyan;
+}
+.naviBtn{
+  background-color: rgb(231, 224, 224);
+  border:none;
+  color:black;
+}
