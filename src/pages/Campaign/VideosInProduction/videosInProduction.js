@@ -12,12 +12,13 @@ import { GlobalFilter } from "./tableData/GlobalFilter";
 import "./videosInProduction.css";
 import { Card, Col, Button, Row, Table } from "reactstrap";
 import { InputGroup, InputGroupAddon, InputGroupText, Input } from "reactstrap";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { getAllcampaigns } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
 
 const VideosInProduction = () => {
   const [data, setCampaign] = useState([]);
+  const [count, setCount] = useState(0);
   const [spinner, setSpinner] = useState(false);
   useEffect(() => {
     setSpinner(true);
@@ -26,6 +27,7 @@ const VideosInProduction = () => {
         console.log(res);
         setSpinner(false);
         setCampaign(res.rows);
+        setCount(res.count);
       })
       .catch((error) => {
         setSpinner(false);
@@ -78,7 +80,9 @@ const VideosInProduction = () => {
                 <FaFilter />
                 &nbsp;Search Filters
               </Button>
+              <span style={{ padding: "5px" }}>{count} Results Returns</span>
             </Col>
+
             <Col md={6}>
               <h4>
                 <strong>Videos In Production</strong>
@@ -102,11 +106,15 @@ const VideosInProduction = () => {
                     >
                       {column.render("Header")}
                       <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? " ðŸ”½"
-                            : " ðŸ”¼"
-                          : ""}
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <FaArrowDown />
+                          ) : (
+                            <FaArrowUp />
+                          )
+                        ) : (
+                          ""
+                        )}
                       </span>
                     </th>
                   ))}

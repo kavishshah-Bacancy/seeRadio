@@ -6,11 +6,14 @@ import icon from "../../../assets/logo.png";
 import { useParams } from "react-router-dom";
 import { getAllcampaignByID } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
-// import { IoIosFastforward, IoMdRewind } from "react-icons/io";
-// import Dropzone from "../../../component/FormElements/Dropzone";
+import FileDataDisplay from "./FileDataDisplay/fileDataDisplay";
+import Moment from "react-moment";
 
 const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
   const [campDetail, setCampDetail] = useState([]);
+  const [scriptFile, setScriptFile] = useState([]);
+  const [voiceFile, setVoiceFile] = useState([]);
+  const [advFile, setAdvFile] = useState([]);
   const params = useParams();
   useEffect(() => {
     console.log(params);
@@ -18,6 +21,16 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
       .then((res) => {
         console.log(res);
         setCampDetail(res);
+        if (res.CampaignAssets.length !== 0) {
+          for (let key in res.CampaignAssets) {
+            if (res.CampaignAssets[key].type === "SCRIPT") {
+              setScriptFile(res.CampaignAssets[key]);
+            }
+            if (res.CampaignAssets[key].type === "AUDIO") {
+              setVoiceFile(res.CampaignAssets[key]);
+            }
+          }
+        }
       })
       .catch((error) => {
         console.log(error.errorMessage);
@@ -129,6 +142,15 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
                 <p>Advertiser Assests Required</p>
               </Col>
             </Row>
+
+            {scriptFile.length !== 0 ? (
+              <FileDataDisplay fileType="SCRIPT" asset={scriptFile} />
+            ) : null}
+
+            {voiceFile.length !== 0 ? (
+              <FileDataDisplay fileType="AUDIO" asset={voiceFile} />
+            ) : null}
+            <br></br>
             <Row>
               <Col className="text-muted">
                 <Label className="font-weight-bold">
@@ -210,7 +232,9 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
               </Col>
               <Col className="text-muted">
                 <Label className="font-weight-bold">Order Date</Label>
-                <p>{campDetail.createdAt}</p>
+                <p>
+                  <Moment format="DD-MMM-YYYY">{campDetail.createdAt}</Moment>
+                </p>
               </Col>
             </Row>
           </Card>

@@ -13,6 +13,7 @@ import {
   uploadFile,
 } from "../../Api/api";
 import Spinner from "../../component/Spinner/spinner";
+import { toast } from "react-toastify";
 
 const Rootform = (props) => {
   const [newAdvertiser, setNewAdvertiser] = useState({
@@ -199,11 +200,12 @@ const Rootform = (props) => {
               landingpageURL: res.salesOrgCompany.companyWebsite,
             });
             setSpinner(false);
+            toast.success("Advertiser Added");
             setStep(step + 1);
           })
           .catch((error) => {
             setSpinner(false);
-            console.log(error.errorMessage);
+            toast.error(error.errorMessage);
           });
       } else if (step === 2) {
         let campaign = {
@@ -227,15 +229,16 @@ const Rootform = (props) => {
             console.log(res);
             setCampaignID(res.history.campaignID);
             setSpinner(false);
+            toast.success("New Order generated");
             setStep(step + 1);
           })
           .catch((error) => {
             setSpinner(false);
-            console.log(error);
+            toast.error(error.errorMessage);
           });
       }
     } else {
-      alert("Please Fill out all field");
+      toast.error("Please All the Fields");
     }
   };
 
@@ -363,18 +366,19 @@ const Rootform = (props) => {
         .then((res) => {
           console.log(res);
           setFileSpinnerFlag(false);
+          toast.success("Script File Uploaded");
           setTest({ ...test, scriptFile: res.data[0].assetUrl });
         })
         .catch((error) => {
           setFileSpinnerFlag(false);
-          console.log(error.errorMessage);
+          toast.error(error.errorMessage);
         });
       setScript({
         ...script,
         fileName: file[0].name,
       });
     } else {
-      alert("Choose Only one File with format Pdf/Doc/Docx");
+      toast.error("Choose Only one File with format Pdf/Doc/Docx");
     }
   };
 
@@ -388,17 +392,18 @@ const Rootform = (props) => {
         .then((res) => {
           console.log(res);
           setAudioFileSpinnerFlag(false);
+          toast.success("Audio File Uploaded");
           setTest({ ...test, audioFile: res.data[0].assetUrl });
         })
         .catch((error) => {
-          console.log(error.errorMessage);
+          toast.error(error.errorMessage);
         });
       setAudio({
         ...audio,
         fileName: file[0].name,
       });
     } else {
-      alert("Choose Only one File with format .mp3/.mp4");
+      toast.error("Choose Only one File with format .mp3/.mp4");
     }
   };
   const advAssetsSubmitHandler = async (file) => {
@@ -416,7 +421,7 @@ const Rootform = (props) => {
             url = res.data[0].assetUrl;
           })
           .catch((error) => {
-            console.log(error.errorMessage);
+            toast.error(error.errorMessage);
           });
         let filesArr = {
           fileName: item.name,
@@ -448,11 +453,12 @@ const Rootform = (props) => {
       uploadFile(formData)
         .then((res) => {
           setFileSpinnerFlag(false);
+          toast.success("Script File Uploaded");
           setTest({ ...test, scriptFile: res.data[0].assetUrl });
           console.log(res.data[0].assetUrl);
         })
         .catch((error) => {
-          console.log(error.errorMessage);
+          toast.error(error.errorMessage);
         });
     } else if (e.target.name === "audioFile") {
       setAudioFlag(true);
@@ -461,11 +467,12 @@ const Rootform = (props) => {
       uploadFile(formData)
         .then((res) => {
           setAudioFileSpinnerFlag(false);
+          toast.success("Audio File Uploaded");
           console.log(res);
           setTest({ ...test, audioFile: res.data[0].assetUrl });
         })
         .catch((error) => {
-          console.log(error.errorMessage);
+          toast.error(error.errorMessage);
         });
       setAudio({
         ...audio,
