@@ -46,13 +46,10 @@ const Rootform = (props) => {
       secPostal: "",
     },
   });
-  const [newAdvResponse, setNewAdvResponse] = useState();
   const [countryValFlag, setCountyValueFlag] = useState(true);
   const [states, setState] = useState([]);
-
   const [secCountryValFlag, setSecCountryValueFlag] = useState(true);
   const [secStates, setSecState] = useState([]);
-
   const [secContactFlag, setSecContactFlag] = useState(false);
   const [billingAddressFlag, setBillingAddressFlag] = useState(false);
   const [newOrder, setNewOrder] = useState({
@@ -70,49 +67,43 @@ const Rootform = (props) => {
     statusByPersonID: "87c21c7f-b104-4645-983c-515b97c23b61",
     statusWithPersonID: "45ac52d4-7d59-4ef6-9a31-905bfee594ba",
   });
-
   const [test, setTest] = useState({
     scriptFile: "",
     audioFile: "",
     advAssetFile: [],
   });
-
   let date = new Date(Date.now());
   const formattedDate = date.toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-
   const [script, setScript] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
     uploadBy: props.user.firstName + " " + props.user.lastName,
   });
-
   const [audio, setAudio] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
     uploadBy: props.user.firstName + " " + props.user.lastName,
   });
-
   const [asset, setAsset] = useState([]);
-
   const [scriptFlag, setScriptFlag] = useState();
   const [audioFlag, setAudioFlag] = useState();
   const [advAssetFlag, setAdvAssetFlag] = useState();
   const [campaignID, setCampaignID] = useState();
-
   const [step, setStep] = useState(1);
   const [spinner, setSpinner] = useState(false);
   const [fileSpinnerFlag, setFileSpinnerFlag] = useState(false);
+  const [audioFileSpinnerFlag, setAudioFileSpinnerFlag] = useState(false);
+  const [advFileSpinnerFlag, setAdvFileSpinnerFlag] = useState(false);
   function generateFormData(file, type) {
     let formData = new FormData();
     formData.append("file", file);
     formData.append("campaignID", campaignID);
     formData.append("type", type);
     formData.append("uploadedBy", localStorage.getItem("id"));
-
     if (type === "OTHER") {
       formData.append("clientID", newOrder.statusWithPersonID);
     }
@@ -124,8 +115,6 @@ const Rootform = (props) => {
     setStep(step - 1);
   };
   const nextStep = () => {
-    //setStep(step + 1);
-
     let flag = false;
     if (step === 1) {
       for (let key in newAdvertiser) {
@@ -273,21 +262,6 @@ const Rootform = (props) => {
       if (name === "country") setState(arr);
       if (name === "secCountry") setSecState(arr);
     });
-
-    // axios.get(`http://localhost:3000/pub/states/${stateVal}`).then((res) => {
-    //   console.log(res.data.data);
-    //   let arr = [];
-    //   for (let key in res.data.data) {
-    //     arr.push({
-    //       id: res.data.data[key].code,
-    //       name: res.data.data[key].name,
-    //       provinceId: res.data.data[key].id,
-    //     });
-    //   }
-    //   if (name === "country") setState(arr);
-    //   if (name === "secCountry") setSecState(arr);
-    //   console.log(states);
-    // });
   };
   const handleChange = (name, value) => {
     console.log(name + " " + value);
@@ -392,6 +366,7 @@ const Rootform = (props) => {
           setTest({ ...test, scriptFile: res.data[0].assetUrl });
         })
         .catch((error) => {
+          setFileSpinnerFlag(false);
           console.log(error.errorMessage);
         });
       setScript({
@@ -407,12 +382,12 @@ const Rootform = (props) => {
     if (file.length !== 0) {
       setTest({ ...test, audioFile: file[0].name });
       setAudioFlag(true);
-      setFileSpinnerFlag(true);
+      setAudioFileSpinnerFlag(true);
       let formData = generateFormData(file[0], "AUDIO");
       uploadFile(formData)
         .then((res) => {
           console.log(res);
-          setFileSpinnerFlag(false);
+          setAudioFileSpinnerFlag(false);
           setTest({ ...test, audioFile: res.data[0].assetUrl });
         })
         .catch((error) => {
@@ -426,18 +401,19 @@ const Rootform = (props) => {
       alert("Choose Only one File with format .mp3/.mp4");
     }
   };
-  const advAssetsSubmitHandler = (file) => {
+  const advAssetsSubmitHandler = async (file) => {
     let arr = [];
     if (file.length !== 0) {
       file.map((item) => {
         console.log(item);
         let formData = generateFormData(item, "OTHER");
-        setFileSpinnerFlag(true);
+        let url = null;
+        setAdvFileSpinnerFlag(true);
         uploadFile(formData)
           .then((res) => {
             console.log(res);
-            setTest({ ...test, audioFile: res.data[0].assetUrl });
-            setFileSpinnerFlag(false);
+            setAdvFileSpinnerFlag(false);
+            url = res.data[0].assetUrl;
           })
           .catch((error) => {
             console.log(error.errorMessage);
@@ -446,6 +422,7 @@ const Rootform = (props) => {
           fileName: item.name,
           uploadDate: formattedDate.split(" ").join("-"),
           uploadBy: props.user.firstName + " " + props.user.lastName,
+          assetURL: url,
         };
         arr.push(filesArr);
       });
@@ -467,8 +444,10 @@ const Rootform = (props) => {
         fileName: e.target.files[0].name,
       });
       let formData = generateFormData(e.target.files[0], "SCRIPT");
+      setFileSpinnerFlag(true);
       uploadFile(formData)
         .then((res) => {
+          setFileSpinnerFlag(false);
           setTest({ ...test, scriptFile: res.data[0].assetUrl });
           console.log(res.data[0].assetUrl);
         })
@@ -477,9 +456,11 @@ const Rootform = (props) => {
         });
     } else if (e.target.name === "audioFile") {
       setAudioFlag(true);
+      setAudioFileSpinnerFlag(true);
       let formData = generateFormData(e.target.files[0], "AUDIO");
       uploadFile(formData)
         .then((res) => {
+          setAudioFileSpinnerFlag(false);
           console.log(res);
           setTest({ ...test, audioFile: res.data[0].assetUrl });
         })
@@ -493,11 +474,25 @@ const Rootform = (props) => {
     } else {
       let files = document.getElementById("adv-file-upload").files;
       let arr = [];
+
       for (let i = 0; i < files.length; i++) {
+        let formData = generateFormData(files[i], "OTHER");
+        let url = null;
+        setAdvFileSpinnerFlag(true);
+        uploadFile(formData)
+          .then((res) => {
+            console.log(res);
+            url = res.data[0].assetUrl;
+            setAdvFileSpinnerFlag(false);
+          })
+          .catch((error) => {
+            console.log(error.errorMessage);
+          });
         let filesArr = {
           fileName: files[i].name,
           uploadDate: formattedDate.split(" ").join("-"),
           uploadBy: props.user.firstName + " " + props.user.lastName,
+          assetURL: url,
         };
         arr.push(filesArr);
       }
@@ -505,7 +500,6 @@ const Rootform = (props) => {
       for (let key in arr) {
         refreshData.push(arr[key]);
       }
-
       setAsset(refreshData);
     }
   };
@@ -585,6 +579,8 @@ const Rootform = (props) => {
             asset={asset}
             test={test}
             fileSpinnerFlag={fileSpinnerFlag}
+            audioFileSpinnerFlag={audioFileSpinnerFlag}
+            advFileSpinnerFlag={advFileSpinnerFlag}
           />
         </>
       );

@@ -25,6 +25,12 @@ export const getAllMarkets = () =>
     localStorage.getItem("token")
   );
 
+export const getAllcampaignByID = (orderID) =>
+  helperFun.getWithToken(
+    `/api/campaign/${orderID}`,
+    localStorage.getItem("token")
+  );
+
 //post Apis
 export const addAdvertiser = (item) =>
   helperFun.postCall(

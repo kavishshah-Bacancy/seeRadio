@@ -23,9 +23,9 @@ function App(props) {
         <Switch>
           <Route path="/" exact component={Dashboard} />
           <Route path="/rootform" component={Rootform} />
-          <Route path="/CampaignDetail" component={CampaignDetail} />
           <Route path="/changePassword" component={ChangePassword} />
           <Route path="/videosInProduction" component={VideosInProduction} />
+          <Route path="/CampaignDetail/:orderId" component={CampaignDetail} />
         </Switch>
       </Router>
     );

@@ -17,6 +17,9 @@ import { IoIosFastforward, IoMdRewind } from "react-icons/io";
 import { BsDownload } from "react-icons/bs";
 import Dropzone from "../../../component/FormElements/Dropzone";
 import OverlaySpinner from "../../../component/OverlaySpinner/overlaySpinner";
+import Spinner from "../../../component/Spinner/spinner";
+import DisplayFileData from "./DisplayFileData/displayFileData";
+import DisplayTable from "./DisplayFileData/displayTable";
 
 const Test = ({
   prevStep,
@@ -33,6 +36,8 @@ const Test = ({
   asset,
   test,
   fileSpinnerFlag,
+  advFileSpinnerFlag,
+  audioFileSpinnerFlag,
 }) => {
   return (
     <Container>
@@ -45,21 +50,22 @@ const Test = ({
             <FormGroup row>
               <Col className="m-3 bg-light text-muted">
                 <Label className="font-weight-bold">Script File</Label>
-                <a
-                  role="button"
+                <Button
                   hidden={!scriptFlag}
-                  style={{ marginLeft: "3%" }}
-                  download="ScriptFile"
-                  href={test.scriptFile}
-                  rel="noreferrer"
-                  target="_blank"
+                  style={{
+                    marginLeft: "3%",
+                    border: "none",
+                    backgroundColor: "whitesmoke",
+                    color: "blue",
+                  }}
+                  onClick={() => window.open(test.scriptFile)}
                 >
                   <strong>
                     {" "}
                     <BsDownload />
                     &nbsp;Download
                   </strong>
-                </a>
+                </Button>
               </Col>
             </FormGroup>
             <Row form hidden={scriptFlag}>
@@ -107,45 +113,29 @@ const Test = ({
             <OverlaySpinner isActive={fileSpinnerFlag}>
               <Row form hidden={!scriptFlag}>
                 <Col>
-                  <Card style={{ padding: "20px", backgroundColor: "#98FB98" }}>
-                    <Row>
-                      <Col>
-                        <FaFileAlt
-                          style={{ fontSize: "50px", color: "#09b7ec" }}
-                        />
-                      </Col>
-                      <Col>
-                        <p className="text-muted">File Name</p>
-                        <strong>{script.fileName}</strong>
-                      </Col>
-                      <Col>
-                        <p className="text-muted">File Uploaded By :</p>
-                        <strong>{script.uploadBy}</strong>
-                      </Col>
-                      <Col>
-                        <p className="text-muted">Upload Date :</p>
-                        <strong>{script.uploadDate}</strong>
-                      </Col>
-                    </Row>
-                  </Card>
+                  <DisplayFileData asset={script} file="script" />
                 </Col>
               </Row>
             </OverlaySpinner>
             <FormGroup row>
               <Col className="m-3 bg-light text-muted">
                 <Label className="font-weight-bold">Voice File</Label>
-                <a
+                <Button
                   hidden={!audioFlag}
-                  style={{ marginLeft: "3%" }}
-                  href={test.audioFile}
-                  download
+                  style={{
+                    marginLeft: "3%",
+                    border: "none",
+                    backgroundColor: "whitesmoke",
+                    color: "blue",
+                  }}
+                  onClick={() => window.open(test.audioFile)}
                 >
                   <strong>
                     {" "}
                     <BsDownload />
                     &nbsp;Download
                   </strong>
-                </a>
+                </Button>
               </Col>
             </FormGroup>
             <Row form hidden={audioFlag}>
@@ -190,35 +180,10 @@ const Test = ({
               </Col>
             </Row>
 
-            <OverlaySpinner isActive={fileSpinnerFlag}>
+            <OverlaySpinner isActive={audioFileSpinnerFlag}>
               <Row form hidden={!audioFlag}>
                 <Col>
-                  <Card
-                    style={{
-                      padding: "20px",
-                      backgroundColor: "#98FB98",
-                    }}
-                  >
-                    <Row>
-                      <Col>
-                        <FaMicrophone
-                          style={{ fontSize: "50px", color: "#09b7ec" }}
-                        />
-                      </Col>
-                      <Col>
-                        <p className="text-muted">File Name</p>
-                        <strong>{audio.fileName}</strong>
-                      </Col>
-                      <Col>
-                        <p className="text-muted">File Uploaded By :</p>
-                        <strong>{audio.uploadBy}</strong>
-                      </Col>
-                      <Col>
-                        <p className="text-muted">Upload Date :</p>
-                        <strong>{audio.uploadDate}</strong>
-                      </Col>
-                    </Row>
-                  </Card>
+                  <DisplayFileData asset={audio} file="audio" />
                 </Col>
               </Row>
             </OverlaySpinner>
@@ -227,68 +192,47 @@ const Test = ({
                 <Label className="font-weight-bold">Advertiser Assets</Label>
               </Col>
             </FormGroup>
-            <Row form>
-              <Col md={6}>
-                <Dropzone onsubmit={advAssetsSubmitHandler}>
-                  <p>
-                    <FaClone style={{ fontSize: "50px", color: "#09b7ec" }} />
-                    <b> Drag 'n' drop your File here</b>
-                  </p>
-                </Dropzone>
-              </Col>
-              <p
-                style={{
-                  fontSize: "15px",
-                  padding: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                OR
-              </p>
-              <Col md={4}>
-                <label htmlFor="adv-file-upload" className="custom-file-upload">
-                  Upload
-                </label>
-                <input
-                  id="adv-file-upload"
-                  type="file"
-                  name="advAssetFile"
-                  onChange={uploadFileHandler}
-                  multiple={true}
-                />
-              </Col>
-            </Row>
+
+            <OverlaySpinner isActive={advFileSpinnerFlag}>
+              <Row form>
+                <Col md={6}>
+                  <Dropzone onsubmit={advAssetsSubmitHandler}>
+                    <p>
+                      <FaClone style={{ fontSize: "50px", color: "#09b7ec" }} />
+                      <b> Drag 'n' drop your File here</b>
+                    </p>
+                  </Dropzone>
+                </Col>
+                <p
+                  style={{
+                    fontSize: "15px",
+                    padding: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  OR
+                </p>
+                <Col md={4}>
+                  <label
+                    htmlFor="adv-file-upload"
+                    className="custom-file-upload"
+                  >
+                    Upload
+                  </label>
+                  <input
+                    id="adv-file-upload"
+                    type="file"
+                    name="advAssetFile"
+                    onChange={uploadFileHandler}
+                    multiple={true}
+                  />
+                </Col>
+              </Row>
+            </OverlaySpinner>
             <br></br>
             <Row hidden={asset.length === 0}>
               <Col>
-                <Card>
-                  <Table striped>
-                    <thead>
-                      <tr>
-                        <th>File Name</th>
-                        <th>File Uploaded By</th>
-                        <th>File Uploaded Date</th>
-                        <th>Download</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {asset.map((item) => {
-                        return (
-                          <tr>
-                            <td>{item.fileName}</td>
-                            <td>{item.uploadBy}</td>
-                            <td>{item.uploadDate}</td>
-                            <td>
-                              <a href={item.fileName} download>
-                                Download
-                              </a>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </Card>
+                <DisplayTable asset={asset} />
               </Col>
             </Row>
 

@@ -17,15 +17,22 @@ import { getAllcampaigns } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
 
 const VideosInProduction = () => {
-  const [campiagn, setCampaign] = useState(null);
+  const [data, setCampaign] = useState([]);
+  const [spinner, setSpinner] = useState(false);
   useEffect(() => {
-    getAllcampaigns().then((res) => {
-      console.log(res);
-      setCampaign(res);
-    });
+    setSpinner(true);
+    getAllcampaigns()
+      .then((res) => {
+        console.log(res);
+        setSpinner(false);
+        setCampaign(res.rows);
+      })
+      .catch((error) => {
+        setSpinner(false);
+      });
   }, []);
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => MOCK_DATA, []);
+  //const data = useMemo(() => campaign, []);
   const {
     getTableProps,
     getTableBodyProps,
@@ -106,11 +113,11 @@ const VideosInProduction = () => {
                 </tr>
               ))}
             </thead>
-            <tbody {...getTableBodyProps()}>
-              {campiagn === null ? (
-                <Spinner />
-              ) : (
-                page.map((row) => {
+            {spinner ? (
+              <Spinner />
+            ) : (
+              <tbody {...getTableBodyProps()}>
+                {page.map((row) => {
                   prepareRow(row);
                   return (
                     <tr {...row.getRowProps()}>
@@ -123,20 +130,9 @@ const VideosInProduction = () => {
                       })}
                     </tr>
                   );
-                })
-              )}
-            </tbody>
-            <tfoot>
-              {footerGroups.map((footerGroup) => (
-                <tr {...footerGroup.getFooterGroupProps()}>
-                  {footerGroup.headers.map((column) => (
-                    <td {...column.getFooterProps()}>
-                      {column.render("Footer")}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tfoot>
+                })}
+              </tbody>
+            )}
           </Table>
         </Card>
       </Col>

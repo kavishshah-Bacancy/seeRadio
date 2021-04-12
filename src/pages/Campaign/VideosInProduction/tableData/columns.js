@@ -1,75 +1,72 @@
-import { ColumnFilter } from "./columnFilter";
+import { Link } from "react-router-dom";
+
 export const COLUMNS = [
   {
     Header: "Id",
     accessor: "id",
-    disableFilters: true,
+  },
+  {
+    Header: "Title/Details",
+    accessor: "title",
     Cell: (col) => {
       return (
-        <button
-          style={{
-            textDecoration: "none",
-            border: "none",
-            backgroundColor: "none",
-          }}
-          onClick={() => {
-            console.log(col.cell.row.original);
-          }}
-        >
-          {col.value}
-        </button>
+        <Link to={`CampaignDetail/${col.cell.row.original.id}`}>
+          <strong>{col.value}</strong>
+        </Link>
       );
     },
   },
   {
-    Header: "First Name",
-    accessor: "first_name",
+    Header: "Advertiser",
+    accessor: "clientCompany.companyName",
   },
   {
-    Header: "Last Name",
-    accessor: "last_name",
+    Header: "Action Required By",
+    accessor: "statusWithPerson",
+    Cell: (col) => {
+      return (
+        <>
+          <p>
+            <Link>
+              {col.value.firstName} {col.value.lastName}
+            </Link>
+          </p>
+          <p>({col.value.roleCode})</p>
+        </>
+      );
+    },
   },
   {
-    Header: "Date of Birth",
-    accessor: "date_of_birth",
+    Header: "Next Action Due By",
+    accessor: "statusDueDate",
+    Cell: (col) => {
+      return (
+        <p>
+          <strong>Not Selected</strong>
+        </p>
+      );
+    },
   },
   {
-    Header: "Country",
-    accessor: "country",
+    Header: "Progress",
+    accessor: "",
+    Cell: (col) => {
+      return (
+        <p>
+          <strong>Not Selected</strong>
+        </p>
+      );
+    },
   },
   {
-    Header: "Phone",
-    accessor: "phone",
-  },
-  {
-    Header: "Email",
-    accessor: "email",
-  },
-  {
-    Header: "Age",
-    accessor: "age",
+    Header: "Start Date",
+    accessor: "startDate",
+    Cell: (col) => {
+      return (
+        <p>
+          <strong>Not Selected</strong>
+        </p>
+      );
+    },
   },
 ];
-
-// export const COLUMNS = [
-//   {
-//     Header: "Id",
-//     accessor: "id",
-//   },
-//   {
-//     Header: "Title/Details",
-//     accessor: "title",
-//   },
-//   {
-//     Header: "Advertiser",
-//     accessor: "clientCompany.companyName",
-//   },
-//   {
-//     Header: "Due Date",
-//     accessor: "statusDueDate",
-//   },
-//   {
-//     Header: "Start Date",
-//     accessor: "startDate",
-//   },
-// ];
