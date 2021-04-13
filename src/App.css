@@ -2,3 +2,6 @@ body{
   background-image: url('../src/assets/bg.jpg');
   background-repeat: no-repeat;
 }
+*{
+  font-family: 'Varela Round', sans-serif;
+}

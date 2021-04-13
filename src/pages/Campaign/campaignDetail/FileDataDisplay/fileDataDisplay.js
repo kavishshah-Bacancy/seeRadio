@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Col, FormGroup, Label, Row } from "reactstrap";
 import { FaFileAlt, FaMicrophone, FaClone } from "react-icons/fa";
 import { BsDownload } from "react-icons/bs";
+import Moment from "react-moment";
 function FileDataDisplay({ fileType, asset }) {
   return (
     <>
@@ -51,7 +52,9 @@ function FileDataDisplay({ fileType, asset }) {
               </Col>
               <Col>
                 <p className="text-muted">Upload Date :</p>
-                <strong>{asset.createdAt}</strong>
+                <strong>
+                  <Moment format="DD-MMM-YYYY">{asset.createdAt}</Moment>
+                </strong>
               </Col>
             </Row>
           </Card>

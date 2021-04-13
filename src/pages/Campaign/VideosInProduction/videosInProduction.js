@@ -144,65 +144,67 @@ const VideosInProduction = () => {
           </Table>
         </Card>
       </Col>
-      <Col>
-        <Card style={{ boxShadow: "5px 5px 10px", padding: "10px" }}>
-          <Row>
-            <Col md={6}>
-              Results Per Page :
-              <Button
-                id="btn10"
-                className="btnPageSize"
-                onClick={() => {
-                  setPageSize(10);
-                }}
-              >
-                10
-              </Button>
-              <span> | </span>
-              <Button className="btnPageSize" onClick={() => setPageSize(20)}>
-                20
-              </Button>
-              <span> | </span>
-              <Button className="btnPageSize" onClick={() => setPageSize(30)}>
-                30
-              </Button>
-            </Col>
-            <Col md={6}>
-              <span style={{ float: "right" }}>
+      {spinner ? null : (
+        <Col>
+          <Card style={{ boxShadow: "5px 5px 10px", padding: "10px" }}>
+            <Row>
+              <Col md={6}>
+                Results Per Page :
                 <Button
-                  size="lg"
-                  className="naviBtn"
-                  onClick={() => previousPage()}
-                  disabled={!canPreviousPage}
+                  id="btn10"
+                  className="btnPageSize"
+                  onClick={() => {
+                    setPageSize(10);
+                  }}
                 >
-                  Prev
+                  10
                 </Button>
-                <span style={{ padding: "7px" }}>
+                <span> | </span>
+                <Button className="btnPageSize" onClick={() => setPageSize(20)}>
+                  20
+                </Button>
+                <span> | </span>
+                <Button className="btnPageSize" onClick={() => setPageSize(30)}>
+                  30
+                </Button>
+              </Col>
+              <Col md={6}>
+                <span style={{ float: "right" }}>
                   <Button
-                    style={{
-                      borderRadius: "80px",
-                      backgroundColor: "#0275d8",
-                      border: "none",
-                      cursor: "none",
-                    }}
                     size="lg"
+                    className="naviBtn"
+                    onClick={() => previousPage()}
+                    disabled={!canPreviousPage}
                   >
-                    <strong>{pageIndex + 1}</strong>
+                    Prev
+                  </Button>
+                  <span style={{ padding: "7px" }}>
+                    <Button
+                      style={{
+                        borderRadius: "80px",
+                        backgroundColor: "#0275d8",
+                        border: "none",
+                        cursor: "none",
+                      }}
+                      size="lg"
+                    >
+                      <strong>{pageIndex + 1}</strong>
+                    </Button>
+                  </span>
+                  <Button
+                    size="lg"
+                    className="naviBtn"
+                    onClick={() => nextPage()}
+                    disabled={!canNextPage}
+                  >
+                    Next
                   </Button>
                 </span>
-                <Button
-                  size="lg"
-                  className="naviBtn"
-                  onClick={() => nextPage()}
-                  disabled={!canNextPage}
-                >
-                  Next
-                </Button>
-              </span>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      )}
     </>
   );
 };

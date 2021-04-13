@@ -20,6 +20,7 @@ import OverlaySpinner from "../../../component/OverlaySpinner/overlaySpinner";
 import Spinner from "../../../component/Spinner/spinner";
 import DisplayFileData from "./DisplayFileData/displayFileData";
 import DisplayTable from "./DisplayFileData/displayTable";
+import FileUpload from "../../../component/uploadFile/fileUpload";
 
 const Test = ({
   prevStep,
@@ -69,7 +70,7 @@ const Test = ({
               </Col>
             </FormGroup>
             <Row form hidden={scriptFlag}>
-              <Col md={6}>
+              {/* <Col md={6}>
                 <Dropzone
                   onsubmit={scriptFileSubmitHandler}
                   label="Script file"
@@ -106,7 +107,14 @@ const Test = ({
                   accept=".pdf,.doc,.docx"
                   max={1}
                 />
-              </Col>
+              </Col> */}
+              <FileUpload
+                name="scriptFile"
+                label="Script File"
+                FileSubmitHandler={scriptFileSubmitHandler}
+                uploadFileHandler={uploadFileHandler}
+                acceptFile=".pdf,.doc,.docx"
+              />
             </Row>
 
             {/* Div For Showing entered File */}
@@ -139,7 +147,7 @@ const Test = ({
               </Col>
             </FormGroup>
             <Row form hidden={audioFlag}>
-              <Col md={6}>
+              {/* <Col md={6}>
                 <Dropzone
                   onsubmit={audioFileSubmitHandler}
                   maxFiles={1}
@@ -177,7 +185,14 @@ const Test = ({
                   accept="audio/*"
                   max={1}
                 />
-              </Col>
+              </Col> */}
+              <FileUpload
+                name="audioFile"
+                label="Audio Filee"
+                FileSubmitHandler={audioFileSubmitHandler}
+                uploadFileHandler={uploadFileHandler}
+                acceptFile="audio/*"
+              />
             </Row>
 
             <OverlaySpinner isActive={audioFileSpinnerFlag}>

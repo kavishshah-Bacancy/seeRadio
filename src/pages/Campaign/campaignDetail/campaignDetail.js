@@ -4,16 +4,56 @@ import { Col, Row, Button, Label, Card, Container, Table } from "reactstrap";
 import "./campaignDetail.css";
 import icon from "../../../assets/logo.png";
 import { useParams } from "react-router-dom";
-import { getAllcampaignByID } from "../../../Api/api";
+import { getAllcampaignByID, uploadFile } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
 import FileDataDisplay from "./FileDataDisplay/fileDataDisplay";
-import Moment from "react-moment";
 
-const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
+import FileDataDisplayInTab from "./FileDataDisplay/fileDataDisplayInTab";
+import FileUpload from "../../../component/uploadFile/fileUpload";
+import { toast } from "react-toastify";
+import { connect } from "react-redux";
+import OverlaySpinner from "../../../component/OverlaySpinner/overlaySpinner";
+import DisplayFileData from "../../order/Test/DisplayFileData/displayFileData";
+import OrderDetails from "./OrderDetails/orderDetails";
+import InformationDetail from "./InformationDetail/informationDetail";
+import CampaignHeader from "./CampaignHeader/campaignHeader";
+
+toast.configure();
+const CampaignDetail = (props) => {
   const [campDetail, setCampDetail] = useState([]);
   const [scriptFile, setScriptFile] = useState([]);
   const [voiceFile, setVoiceFile] = useState([]);
   const [advFile, setAdvFile] = useState([]);
+
+  const [test, setTest] = useState({
+    scriptFile: "",
+    audioFile: "",
+    advAssetFile: [],
+  });
+  let date = new Date(Date.now());
+  const formattedDate = date.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  const [script, setScript] = useState({
+    fileName: "",
+    uploadDate: formattedDate.split(" ").join("-"),
+    uploadBy: props.user.firstName + " " + props.user.lastName,
+  });
+  const [audio, setAudio] = useState({
+    fileName: "",
+    uploadDate: formattedDate.split(" ").join("-"),
+    uploadBy: props.user.firstName + " " + props.user.lastName,
+  });
+
+  const [scriptFlag, setScriptFlag] = useState();
+  const [audioFlag, setAudioFlag] = useState();
+  const [advAssetFlag, setAdvAssetFlag] = useState();
+  const [fileSpinnerFlag, setFileSpinnerFlag] = useState(false);
+  const [audioFileSpinnerFlag, setAudioFileSpinnerFlag] = useState(false);
+  const [advFileSpinnerFlag, setAdvFileSpinnerFlag] = useState(false);
+
   const params = useParams();
   useEffect(() => {
     console.log(params);
@@ -22,44 +62,164 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
         console.log(res);
         setCampDetail(res);
         if (res.CampaignAssets.length !== 0) {
+          let advarr = [];
           for (let key in res.CampaignAssets) {
             if (res.CampaignAssets[key].type === "SCRIPT") {
               setScriptFile(res.CampaignAssets[key]);
-            }
-            if (res.CampaignAssets[key].type === "AUDIO") {
+            } else if (res.CampaignAssets[key].type === "AUDIO") {
               setVoiceFile(res.CampaignAssets[key]);
+            } else {
+              advarr.push(res.CampaignAssets[key]);
             }
           }
+          setAdvFile(advarr);
+          console.log(advFile);
         }
       })
       .catch((error) => {
         console.log(error.errorMessage);
       });
   }, []);
+
+  function generateFormData(file, type) {
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("campaignID", params.orderId);
+    formData.append("type", type);
+    formData.append("uploadedBy", localStorage.getItem("id"));
+    if (type === "OTHER") {
+      //formData.append("clientID", newOrder.statusWithPersonID);
+    }
+    return formData;
+  }
+  const scriptFileSubmitHandler = (file) => {
+    if (file.length !== 0) {
+      setScriptFlag(true);
+      setFileSpinnerFlag(true);
+      let formData = generateFormData(file[0], "SCRIPT");
+      uploadFile(formData)
+        .then((res) => {
+          console.log(res);
+          setFileSpinnerFlag(false);
+          toast.success("Script File Uploaded");
+          setTest({ ...test, scriptFile: res.data[0].assetUrl });
+        })
+        .catch((error) => {
+          setFileSpinnerFlag(false);
+          toast.error(error.errorMessage);
+        });
+      setScript({
+        ...script,
+        fileName: file[0].name,
+      });
+    } else {
+      toast.error("Choose Only one File with format Pdf/Doc/Docx");
+    }
+  };
+
+  const audioFileSubmitHandler = (file) => {
+    if (file.length !== 0) {
+      setTest({ ...test, audioFile: file[0].name });
+      setAudioFlag(true);
+      setAudioFileSpinnerFlag(true);
+      let formData = generateFormData(file[0], "AUDIO");
+      uploadFile(formData)
+        .then((res) => {
+          console.log(res);
+          setAudioFileSpinnerFlag(false);
+          toast.success("Audio File Uploaded");
+          setTest({ ...test, audioFile: res.data[0].assetUrl });
+        })
+        .catch((error) => {
+          toast.error(error.errorMessage);
+        });
+      setAudio({
+        ...audio,
+        fileName: file[0].name,
+      });
+    } else {
+      toast.error("Choose Only one File with format .mp3/.mp4");
+    }
+  };
+
+  const uploadFileHandler = (e) => {
+    if (e.target.name === "scriptFile") {
+      setScriptFlag(true);
+      setScript({
+        ...script,
+        fileName: e.target.files[0].name,
+      });
+      let formData = generateFormData(e.target.files[0], "SCRIPT");
+      setFileSpinnerFlag(true);
+      uploadFile(formData)
+        .then((res) => {
+          setFileSpinnerFlag(false);
+          toast.success("Script File Uploaded");
+          setTest({ ...test, scriptFile: res.data[0].assetUrl });
+          console.log(res.data[0].assetUrl);
+        })
+        .catch((error) => {
+          toast.error(error.errorMessage);
+        });
+    } else if (e.target.name === "audioFile") {
+      setAudioFlag(true);
+      setAudioFileSpinnerFlag(true);
+      let formData = generateFormData(e.target.files[0], "AUDIO");
+      uploadFile(formData)
+        .then((res) => {
+          setAudioFileSpinnerFlag(false);
+          toast.success("Audio File Uploaded");
+          console.log(res);
+          setTest({ ...test, audioFile: res.data[0].assetUrl });
+        })
+        .catch((error) => {
+          toast.error(error.errorMessage);
+        });
+      setAudio({
+        ...audio,
+        fileName: e.target.files[0].name,
+      });
+    } else {
+      // let files = document.getElementById("adv-file-upload").files;
+      // let arr = [];
+      // for (let i = 0; i < files.length; i++) {
+      //   let formData = generateFormData(files[i], "OTHER");
+      //   let url = null;
+      //   setAdvFileSpinnerFlag(true);
+      //   uploadFile(formData)
+      //     .then((res) => {
+      //       console.log(res);
+      //       url = res.data[0].assetUrl;
+      //       setAdvFileSpinnerFlag(false);
+      //     })
+      //     .catch((error) => {
+      //       console.log(error.errorMessage);
+      //     });
+      //   let filesArr = {
+      //     fileName: files[i].name,
+      //     uploadDate: formattedDate.split(" ").join("-"),
+      //     uploadBy: props.user.firstName + " " + props.user.lastName,
+      //     assetURL: url,
+      //   };
+      //   arr.push(filesArr);
+      // }
+      // let refreshData = [...asset];
+      // for (let key in arr) {
+      //   refreshData.push(arr[key]);
+      // }
+      // setAsset(refreshData);
+    }
+  };
+
   return (
     <Container>
       {campDetail.length === 0 ? (
         <Spinner />
       ) : (
         <Col style={{ marginTop: "20px" }}>
-          <Row>
-            <Col>
-              <p className="text-muted">Advertiser</p>
-              <strong>{campDetail.clientCompany.companyName}</strong>
-            </Col>
-            <Col>
-              <p className="text-muted">Order Name</p>
-              <strong>{campDetail.title}</strong>
-            </Col>
-            <Col>
-              <p className="text-muted">Order Number</p>
-              <strong>{campDetail.clientCampaignNumber}</strong>
-            </Col>
-            <Col>
-              <p className="text-muted">Sales Organization</p>
-              <strong>{campDetail.SalesOrgCompany.companyName}</strong>
-            </Col>
-          </Row>
+          {/* Main Header Shown */}
+          <CampaignHeader campDetail={campDetail} />
+
           <Card style={{ padding: "20px 40px" }}>
             <Row>
               <Col>
@@ -87,50 +247,10 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
                 <hr></hr>
               </Col>
             </Row>
-            <Row style={{ padding: "0px 0px 30px" }}>
-              <Table borderless style={{ width: "60%" }}>
-                <thead>
-                  <tr className="text-muted">
-                    <th>
-                      <Label className="bg-light font-weight-bold">
-                        <strong>Account Manager Assigned</strong>
-                      </Label>
-                    </th>
-                    <th>
-                      <Label className="bg-light font-weight-bold">
-                        <strong>Distribution Partner company Assigned</strong>
-                      </Label>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Kavish shah</td>
-                    <td>Kavish shah</td>
-                  </tr>
-                </tbody>
-                <thead>
-                  <tr className="text-muted">
-                    <th>
-                      <Label className="bg-light font-weight-bold">
-                        <strong>Sales Person Assigned</strong>
-                      </Label>
-                    </th>
-                    <th>
-                      <Label className="bg-light font-weight-bold">
-                        <strong>Graphic Designer Assigned</strong>
-                      </Label>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Kavish shah</td>
-                    <td>Not Yet Assigned</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Row>
+
+            {/* Information Tab Shown */}
+            <InformationDetail campDetail={campDetail} />
+
             <Row>
               <Col className="text-muted">
                 <Label className="font-weight-bold">Production Progress</Label>
@@ -145,12 +265,49 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
 
             {scriptFile.length !== 0 ? (
               <FileDataDisplay fileType="SCRIPT" asset={scriptFile} />
-            ) : null}
-
+            ) : scriptFlag ? (
+              <OverlaySpinner isActive={fileSpinnerFlag}>
+                <Row form hidden={!scriptFlag}>
+                  <Col>
+                    <DisplayFileData asset={script} file="script" />
+                  </Col>
+                </Row>
+              </OverlaySpinner>
+            ) : (
+              <Row form hidden={scriptFlag}>
+                <FileUpload
+                  name="scriptFile"
+                  label="Script File"
+                  FileSubmitHandler={scriptFileSubmitHandler}
+                  uploadFileHandler={uploadFileHandler}
+                  acceptFile=".pdf,.doc,.docx"
+                />
+              </Row>
+            )}
+            <br></br>
             {voiceFile.length !== 0 ? (
               <FileDataDisplay fileType="AUDIO" asset={voiceFile} />
-            ) : null}
+            ) : audioFlag ? (
+              <OverlaySpinner isActive={audioFileSpinnerFlag}>
+                <Row form hidden={!audioFlag}>
+                  <Col>
+                    <DisplayFileData asset={audio} file="audio" />
+                  </Col>
+                </Row>
+              </OverlaySpinner>
+            ) : (
+              <Row form hidden={audioFlag}>
+                <FileUpload
+                  name="audioFile"
+                  label="Voice File"
+                  FileSubmitHandler={audioFileSubmitHandler}
+                  uploadFileHandler={uploadFileHandler}
+                  acceptFile="audio/*"
+                />
+              </Row>
+            )}
             <br></br>
+
             <Row>
               <Col className="text-muted">
                 <Label className="font-weight-bold">
@@ -159,91 +316,19 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
                 <hr></hr>
               </Col>
             </Row>
-            {/* <Row style={{ padding: "0px 0px 30px" }}> */}
-            <Table striped>
-              <thead>
-                <tr>
-                  <th>File Name</th>
-                  <th>File Uploaded By</th>
-                  <th>File Uploaded Date</th>
-                  <th>Download</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>abc.jpg</td>
-                  <td>Kavish shah</td>
-                  <td>23-July-2021</td>
-                  <td>
-                    <a href={icon} download>
-                      Download
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>banner.jpg</td>
-                  <td>Kavish shah</td>
-                  <td>23-July-2021</td>
-                  <td>
-                    <a href={icon} download>
-                      Download
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-            {/* </Row> */}
 
-            <Row>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Order</Label>
-                <hr></hr>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Description</Label>
-                <p>{campDetail.description}</p>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">
-                  Preferred Landing Website URL
-                </Label>
-                <p>
-                  <a href="/">{campDetail.landingpageURL}</a>
-                </p>
-              </Col>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Distribution Budget</Label>
-                <p>${campDetail.distributionBudget}</p>
-              </Col>
-              <Col></Col>
-            </Row>
-            <Row>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Target Market</Label>
-                <p>{campDetail.targetMarket}</p>
-              </Col>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Industry Category</Label>
-                <p>{campDetail.clientCompany.Industry.name}</p>
-              </Col>
-              <Col className="text-muted">
-                <Label className="font-weight-bold">Order Date</Label>
-                <p>
-                  <Moment format="DD-MMM-YYYY">{campDetail.createdAt}</Moment>
-                </p>
-              </Col>
-            </Row>
+            {/* Asset Display */}
+            {advFile.length !== 0 ? (
+              <FileDataDisplayInTab fileData={advFile} />
+            ) : null}
+
+            {/* Order Details */}
+            <OrderDetails campDetail={campDetail} />
           </Card>
+
           <div style={{ marginTop: "10px" }}>
             <span style={{ float: "left" }}>
-              <Button
-                onClick={prevStep}
-                style={{ backgroundColor: "#09b7ec", border: "none" }}
-              >
+              <Button style={{ backgroundColor: "#09b7ec", border: "none" }}>
                 <BsDownload /> Download All Assests
               </Button>
             </span>
@@ -259,5 +344,9 @@ const CampaignDetail = ({ prevStep, dropzoneSubmitHandler }) => {
     </Container>
   );
 };
-
-export default CampaignDetail;
+const mapStateToProps = (state) => {
+  return {
+    user: state.authReducer.activeUser,
+  };
+};
+export default connect(mapStateToProps)(CampaignDetail);

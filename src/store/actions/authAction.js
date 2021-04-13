@@ -55,6 +55,7 @@ export const login = (email, password) => {
           lastName: res.personData.lastName,
           role: res.personData.roleCode,
         };
+        localStorage.setItem("personalInfo", JSON.stringify(personData));
         toast.info("Successfully loggedIn");
         dispatch(authSuccess(res.token, personData));
       })

@@ -3,16 +3,19 @@ import { Link } from "react-router-dom";
 export const COLUMNS = [
   {
     Header: "Id",
-    accessor: "id",
+    accessor: "clientCampaignNumber",
   },
   {
     Header: "Title/Details",
     accessor: "title",
     Cell: (col) => {
       return (
-        <Link to={`CampaignDetail/${col.cell.row.original.id}`}>
-          <strong>{col.value}</strong>
-        </Link>
+        <>
+          <Link to={`CampaignDetail/${col.cell.row.original.id}`}>
+            <strong>{col.value}</strong>
+          </Link>
+          <p>{col.cell.row.original.description}</p>
+        </>
       );
     },
   },

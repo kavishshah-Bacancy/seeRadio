@@ -16,7 +16,6 @@ const InputField = ({
   const [error, setError] = useState(false);
   const handleChange = (event) => {
     setError(validateInput(validators, event.target.value));
-
     onChange(event.target.name, event.target.value);
   };
 
