@@ -15,7 +15,8 @@ import {
 import Spinner from "../../component/Spinner/spinner";
 import { toast } from "react-toastify";
 
-const Rootform = (props) => {
+const Rootform = () => {
+  const personInfo = JSON.parse(localStorage.getItem("personalInfo"));
   const [newAdvertiser, setNewAdvertiser] = useState({
     companyName: "",
     website: "",
@@ -82,12 +83,12 @@ const Rootform = (props) => {
   const [script, setScript] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
-    uploadBy: props.user.firstName + " " + props.user.lastName,
+    uploadBy: personInfo.firstName + " " + personInfo.lastName,
   });
   const [audio, setAudio] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
-    uploadBy: props.user.firstName + " " + props.user.lastName,
+    uploadBy: personInfo.firstName + " " + personInfo.lastName,
   });
   const [asset, setAsset] = useState([]);
   const [scriptFlag, setScriptFlag] = useState();
@@ -181,7 +182,7 @@ const Rootform = (props) => {
             phone: newAdvertiser.secondaryContact.secPhone,
           },
           roleCode: "CLIENT",
-          createdByPerson: props.user.id,
+          createdByPerson: personInfo.id,
         };
         console.log(client);
         setSpinner(true);
@@ -426,7 +427,7 @@ const Rootform = (props) => {
         let filesArr = {
           fileName: item.name,
           uploadDate: formattedDate.split(" ").join("-"),
-          uploadBy: props.user.firstName + " " + props.user.lastName,
+          uploadBy: personInfo.firstName + " " + personInfo.lastName,
           assetURL: url,
         };
         arr.push(filesArr);
@@ -498,7 +499,7 @@ const Rootform = (props) => {
         let filesArr = {
           fileName: files[i].name,
           uploadDate: formattedDate.split(" ").join("-"),
-          uploadBy: props.user.firstName + " " + props.user.lastName,
+          uploadBy: personInfo.firstName + " " + personInfo.lastName,
           assetURL: url,
         };
         arr.push(filesArr);
@@ -596,9 +597,4 @@ const Rootform = (props) => {
   }
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.authReducer.activeUser,
-  };
-};
-export default connect(mapStateToProps)(Rootform);
+export default Rootform;

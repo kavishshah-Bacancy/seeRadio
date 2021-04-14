@@ -33,9 +33,8 @@ import { connect } from "react-redux";
 
 const NavBar = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const toggle = () => setIsOpen(!isOpen);
-
+  const personInfo = JSON.parse(localStorage.getItem("personalInfo"));
   return (
     <div>
       <Navbar style={{ backgroundColor: "white" }} light expand="md">
@@ -47,8 +46,10 @@ const NavBar = (props) => {
               <DropdownToggle nav caret>
                 <span>
                   <button className="profileIcon">
-                    {props.user.firstName[0]}
-                    {props.user.lastName[0]}
+                    {/* {props.user.firstName[0]}
+                    {props.user.lastName[0]} */}
+                    {personInfo.firstName[0]}
+                    {personInfo.lastName[0]}
                   </button>
                 </span>
               </DropdownToggle>
@@ -81,8 +82,10 @@ const NavBar = (props) => {
               </DropdownMenu>
               <div className="userInfo">
                 ComputerCity <br></br>
-                {props.user.role} <br></br>
-                {props.user.email}
+                {/* {props.user.role} <br></br>
+                {props.user.email} */}
+                {personInfo.role} <br></br>
+                {personInfo.email}
               </div>
             </UncontrolledDropdown>
           </Nav>
@@ -94,7 +97,7 @@ const NavBar = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <Link className="nav-link" to="/">
+              <Link className="nav-link" to="/dashboard">
                 <FaTachometerAlt />
                 &nbsp; Dashboard
               </Link>
@@ -119,7 +122,7 @@ const NavBar = (props) => {
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>
-              <Link className="nav-link" to="/">
+              <Link className="nav-link" to="">
                 <FaAudioDescription />
                 &nbsp;Advertiser
               </Link>

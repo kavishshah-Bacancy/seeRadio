@@ -7,15 +7,12 @@ import {
   Card,
   CardBody,
   Form,
-  FormGroup,
   Label,
 } from "reactstrap";
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import "../login/login.css";
-import InputField from "../../component/FormElements/InputField";
 import { Validators } from "../../component/Validator/Validator";
 import InputFieldIcon from "../../component/FormElements/InputFieldIcon";
-import axios from "axios";
 import { changePasswordFun } from "../../Api/api";
 import * as actions from "../../store/actions/index";
 import { connect } from "react-redux";
@@ -55,17 +52,6 @@ const ChangePassword = (props) => {
       .catch((error) => {
         toast.error(error.errorMessage);
       });
-    // axios
-    //   .post("http://localhost:3000/api/person/changePassword", item)
-    //   .then((res) => {
-    //     console.log(res.data);
-    //     props.onUpdateToken(res.data.data.token);
-    //     toast.success(res.data.data.message);
-    //     history.push("/");
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response.data.errorMessage);
-    //   });
   };
   return (
     <div>

@@ -39,11 +39,6 @@ const AddnewAdvertiser = ({
     getIndustry().then((res) => {
       setIndusCat(res);
     });
-    // axios
-    //   .get("http://localhost:3000/api/wholesalepricing/getIndustries")
-    //   .then((res) => {
-    //     setIndusCat(res.data.data);
-    //   });
 
     getCountry().then((res) => {
       let arr = [];
@@ -56,17 +51,6 @@ const AddnewAdvertiser = ({
       console.log(arr);
       setCountrynew(arr);
     });
-    // axios.get("http://localhost:3000/pub/country").then((res) => {
-    //   let arr = [];
-    //   for (let key in res.data.data) {
-    //     arr.push({
-    //       id: res.data.data[key].code,
-    //       name: res.data.data[key].name,
-    //     });
-    //   }
-    //   console.log(arr);
-    //   setCountrynew(arr);
-    // });
   }, []);
 
   return (

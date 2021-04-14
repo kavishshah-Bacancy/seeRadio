@@ -12,38 +12,47 @@ import { connect } from "react-redux";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AuthGuard from "./component/AuthGuard/authGuard";
+import NotFoundPage from "./pages/NotFoundPage/notFoundPage";
 
 toast.configure();
 function App(props) {
-  let routes = <Login />;
-  if (props.isAuthenticated) {
-    routes = (
-      <Router>
-        <NavBar />
-        <Switch>
-          <Route path="/" exact component={Dashboard} />
-          <Route path="/rootform" component={Rootform} />
-          <Route path="/changePassword" component={ChangePassword} />
-          <Route path="/videosInProduction" component={VideosInProduction} />
-          <Route path="/CampaignDetail/:orderId" component={CampaignDetail} />
-        </Switch>
-      </Router>
-    );
-  }
+  // let routes = <Login />;
+  // if (props.isAuthenticated) {
+  //   routes = (
+  //     <Router>
+  //       <NavBar />
+  //       <Switch>
+  //         <Route path="/" exact component={Dashboard} />
+  //         <Route path="/rootform" component={Rootform} />
+  //         <Route path="/changePassword" component={ChangePassword} />
+  //         <Route path="/videosInProduction" component={VideosInProduction} />
+  //         <Route path="/CampaignDetail/:orderId" component={CampaignDetail} />
+  //       </Switch>
+  //     </Router>
+  //   );
+  // }
 
   return (
     <div>
-      {routes}
-      {/* <Router>
-        <NavBar />
+      {/* {routes} */}
+      <Router>
         <Switch>
-          <Route path="/" exact component={Dashboard} />
-          <Route path="/rootform" component={Rootform} />
-          <Route path="/CampaignDetail" component={CampaignDetail} />
-          <Route path="/changePassword" component={ChangePassword} />
-          <Route path="/videosInProduction" component={VideosInProduction} />
+          <Route path="/" exact component={Login} />
+          <AuthGuard path="/dashboard" component={Dashboard} />
+          <AuthGuard path="/rootform" component={Rootform} />
+          <AuthGuard
+            path="/CampaignDetail/:orderId"
+            component={CampaignDetail}
+          />
+          <AuthGuard path="/changePassword" component={ChangePassword} />
+          <AuthGuard
+            path="/videosInProduction"
+            component={VideosInProduction}
+          />
+          <Route path="*" component={NotFoundPage} />
         </Switch>
-      </Router> */}
+      </Router>
 
       {/* <NavBar />
       <Rootform />

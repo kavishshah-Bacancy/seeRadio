@@ -1,7 +1,5 @@
 import * as helperFun from "./helperFunction";
 
-// const token = localStorage.getItem("token");
-// console.log(token);
 export const loginApi = (data) => helperFun.publicPostCall("/pub/login", data);
 
 //get Apis

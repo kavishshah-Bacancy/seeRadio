@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as actionTypes from "../actionTypes/actionTypes";
 import { loginApi } from "../../Api/api";
-
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -91,6 +90,7 @@ export const logout = () => {
   return (dispatch) => {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
+    localStorage.removeItem("personalInfo");
     dispatch(authLogout());
   };
 };

@@ -18,8 +18,10 @@ import { Validators } from "../../component/Validator/Validator";
 import InputFieldIcon from "../../component/FormElements/InputFieldIcon";
 import * as actions from "../../store/actions/index";
 import { connect } from "react-redux";
+import { useHistory } from "react-router";
 
 const Login = (props) => {
+  const history = useHistory();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -34,6 +36,9 @@ const Login = (props) => {
     props.onLogin(loginData.email, loginData.password);
   };
 
+  if (props.isAuthenticated) {
+    history.push("/dashboard");
+  }
   return (
     <div>
       <Container>
@@ -125,9 +130,15 @@ const Login = (props) => {
   );
 };
 
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.authReducer.token !== null,
+    error: state.authReducer.error,
+  };
+};
 const mapDispatchToProps = (dispatch) => {
   return {
     onLogin: (email, password) => dispatch(actions.login(email, password)),
   };
 };
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

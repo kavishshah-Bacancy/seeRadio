@@ -70,44 +70,6 @@ const Test = ({
               </Col>
             </FormGroup>
             <Row form hidden={scriptFlag}>
-              {/* <Col md={6}>
-                <Dropzone
-                  onsubmit={scriptFileSubmitHandler}
-                  label="Script file"
-                  maxFiles={1}
-                  accept=".pdf,.doc,.docx"
-                >
-                  <p>
-                    <FaFileAlt style={{ fontSize: "50px", color: "#09b7ec" }} />
-                    <b> Drag 'n' drop your SCRIPT File here</b>
-                  </p>
-                </Dropzone>
-              </Col>
-              <p
-                style={{
-                  fontSize: "15px",
-                  padding: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                OR
-              </p>
-              <Col md={4}>
-                <label
-                  htmlFor="script-file-upload"
-                  className="custom-file-upload"
-                >
-                  Upload
-                </label>
-                <input
-                  id="script-file-upload"
-                  type="file"
-                  name="scriptFile"
-                  onChange={uploadFileHandler}
-                  accept=".pdf,.doc,.docx"
-                  max={1}
-                />
-              </Col> */}
               <FileUpload
                 name="scriptFile"
                 label="Script File"
@@ -147,45 +109,6 @@ const Test = ({
               </Col>
             </FormGroup>
             <Row form hidden={audioFlag}>
-              {/* <Col md={6}>
-                <Dropzone
-                  onsubmit={audioFileSubmitHandler}
-                  maxFiles={1}
-                  accept=".mp3,.mp4"
-                >
-                  <p>
-                    <FaMicrophone
-                      style={{ fontSize: "50px", color: "#09b7ec" }}
-                    />
-                    <b> Drag 'n' drop your AUDIO File here</b>
-                  </p>
-                </Dropzone>
-              </Col>
-              <p
-                style={{
-                  fontSize: "15px",
-                  padding: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                OR
-              </p>
-              <Col md={4}>
-                <label
-                  htmlFor="audio-file-upload"
-                  className="custom-file-upload"
-                >
-                  Upload
-                </label>
-                <input
-                  id="audio-file-upload"
-                  type="file"
-                  name="audioFile"
-                  onChange={uploadFileHandler}
-                  accept="audio/*"
-                  max={1}
-                />
-              </Col> */}
               <FileUpload
                 name="audioFile"
                 label="Audio Filee"

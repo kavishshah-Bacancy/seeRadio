@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { BsArrowRepeat, BsDownload } from "react-icons/bs";
-import { Col, Row, Button, Label, Card, Container, Table } from "reactstrap";
+import { Col, Row, Button, Label, Card, Container } from "reactstrap";
 import "./campaignDetail.css";
-import icon from "../../../assets/logo.png";
 import { useParams } from "react-router-dom";
 import { getAllcampaignByID, uploadFile } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
 import FileDataDisplay from "./FileDataDisplay/fileDataDisplay";
-
+import { FaClone } from "react-icons/fa";
 import FileDataDisplayInTab from "./FileDataDisplay/fileDataDisplayInTab";
 import FileUpload from "../../../component/uploadFile/fileUpload";
 import { toast } from "react-toastify";
@@ -17,9 +16,12 @@ import DisplayFileData from "../../order/Test/DisplayFileData/displayFileData";
 import OrderDetails from "./OrderDetails/orderDetails";
 import InformationDetail from "./InformationDetail/informationDetail";
 import CampaignHeader from "./CampaignHeader/campaignHeader";
+import DisplayTable from "../../order/Test/DisplayFileData/displayTable";
+import Dropzone from "../../../component/FormElements/Dropzone";
 
 toast.configure();
-const CampaignDetail = (props) => {
+const CampaignDetail = () => {
+  const personInfo = JSON.parse(localStorage.getItem("personalInfo"));
   const [campDetail, setCampDetail] = useState([]);
   const [scriptFile, setScriptFile] = useState([]);
   const [voiceFile, setVoiceFile] = useState([]);
@@ -39,20 +41,22 @@ const CampaignDetail = (props) => {
   const [script, setScript] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
-    uploadBy: props.user.firstName + " " + props.user.lastName,
+    uploadBy: personInfo.firstName + " " + personInfo.lastName,
   });
   const [audio, setAudio] = useState({
     fileName: "",
     uploadDate: formattedDate.split(" ").join("-"),
-    uploadBy: props.user.firstName + " " + props.user.lastName,
+    uploadBy: personInfo.firstName + " " + personInfo.lastName,
   });
 
+  const [asset, setAsset] = useState([]);
   const [scriptFlag, setScriptFlag] = useState();
   const [audioFlag, setAudioFlag] = useState();
   const [advAssetFlag, setAdvAssetFlag] = useState();
   const [fileSpinnerFlag, setFileSpinnerFlag] = useState(false);
   const [audioFileSpinnerFlag, setAudioFileSpinnerFlag] = useState(false);
   const [advFileSpinnerFlag, setAdvFileSpinnerFlag] = useState(false);
+  const [clientId, setClientId] = useState();
 
   const params = useParams();
   useEffect(() => {
@@ -61,6 +65,7 @@ const CampaignDetail = (props) => {
       .then((res) => {
         console.log(res);
         setCampDetail(res);
+        setClientId(res.clientCompany.clientPersonID);
         if (res.CampaignAssets.length !== 0) {
           let advarr = [];
           for (let key in res.CampaignAssets) {
@@ -88,7 +93,7 @@ const CampaignDetail = (props) => {
     formData.append("type", type);
     formData.append("uploadedBy", localStorage.getItem("id"));
     if (type === "OTHER") {
-      //formData.append("clientID", newOrder.statusWithPersonID);
+      formData.append("clientID", clientId);
     }
     return formData;
   }
@@ -142,6 +147,39 @@ const CampaignDetail = (props) => {
     }
   };
 
+  const advAssetsSubmitHandler = async (file) => {
+    let arr = [];
+    if (file.length !== 0) {
+      file.map((item) => {
+        console.log(item);
+        let formData = generateFormData(item, "OTHER");
+        let url = null;
+        setAdvFileSpinnerFlag(true);
+        uploadFile(formData)
+          .then((res) => {
+            console.log(res);
+            setAdvFileSpinnerFlag(false);
+            url = res.data[0].assetUrl;
+          })
+          .catch((error) => {
+            toast.error(error.errorMessage);
+          });
+        let filesArr = {
+          fileName: item.name,
+          uploadDate: formattedDate.split(" ").join("-"),
+          uploadBy: personInfo.firstName + " " + personInfo.lastName,
+          assetURL: url,
+        };
+        arr.push(filesArr);
+      });
+
+      let refreshData = [...asset];
+      for (let key in arr) {
+        refreshData.push(arr[key]);
+      }
+      setAsset(refreshData);
+    }
+  };
   const uploadFileHandler = (e) => {
     if (e.target.name === "scriptFile") {
       setScriptFlag(true);
@@ -180,34 +218,34 @@ const CampaignDetail = (props) => {
         fileName: e.target.files[0].name,
       });
     } else {
-      // let files = document.getElementById("adv-file-upload").files;
-      // let arr = [];
-      // for (let i = 0; i < files.length; i++) {
-      //   let formData = generateFormData(files[i], "OTHER");
-      //   let url = null;
-      //   setAdvFileSpinnerFlag(true);
-      //   uploadFile(formData)
-      //     .then((res) => {
-      //       console.log(res);
-      //       url = res.data[0].assetUrl;
-      //       setAdvFileSpinnerFlag(false);
-      //     })
-      //     .catch((error) => {
-      //       console.log(error.errorMessage);
-      //     });
-      //   let filesArr = {
-      //     fileName: files[i].name,
-      //     uploadDate: formattedDate.split(" ").join("-"),
-      //     uploadBy: props.user.firstName + " " + props.user.lastName,
-      //     assetURL: url,
-      //   };
-      //   arr.push(filesArr);
-      // }
-      // let refreshData = [...asset];
-      // for (let key in arr) {
-      //   refreshData.push(arr[key]);
-      // }
-      // setAsset(refreshData);
+      let files = document.getElementById("adv-file-upload").files;
+      let arr = [];
+      for (let i = 0; i < files.length; i++) {
+        let formData = generateFormData(files[i], "OTHER");
+        let url = null;
+        setAdvFileSpinnerFlag(true);
+        uploadFile(formData)
+          .then((res) => {
+            console.log(res);
+            url = res.data[0].assetUrl;
+            setAdvFileSpinnerFlag(false);
+          })
+          .catch((error) => {
+            console.log(error.errorMessage);
+          });
+        let filesArr = {
+          fileName: files[i].name,
+          uploadDate: formattedDate.split(" ").join("-"),
+          uploadBy: personInfo.firstName + " " + personInfo.lastName,
+          assetURL: url,
+        };
+        arr.push(filesArr);
+      }
+      let refreshData = [...asset];
+      for (let key in arr) {
+        refreshData.push(arr[key]);
+      }
+      setAsset(refreshData);
     }
   };
 
@@ -320,8 +358,50 @@ const CampaignDetail = (props) => {
             {/* Asset Display */}
             {advFile.length !== 0 ? (
               <FileDataDisplayInTab fileData={advFile} />
+            ) : (
+              <OverlaySpinner isActive={advFileSpinnerFlag}>
+                <Row form>
+                  <Col md={6}>
+                    <Dropzone onsubmit={advAssetsSubmitHandler}>
+                      <p>
+                        <FaClone
+                          style={{ fontSize: "50px", color: "#09b7ec" }}
+                        />
+                        <b> Drag 'n' drop your File here</b>
+                      </p>
+                    </Dropzone>
+                  </Col>
+                  <p
+                    style={{
+                      fontSize: "15px",
+                      padding: "20px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    OR
+                  </p>
+                  <Col md={4}>
+                    <label
+                      htmlFor="adv-file-upload"
+                      className="custom-file-upload"
+                    >
+                      Upload
+                    </label>
+                    <input
+                      id="adv-file-upload"
+                      type="file"
+                      name="advAssetFile"
+                      onChange={uploadFileHandler}
+                      multiple={true}
+                    />
+                  </Col>
+                </Row>
+              </OverlaySpinner>
+            )}
+            {asset.length !== 0 && advFile.length === 0 ? (
+              <DisplayTable asset={asset} />
             ) : null}
-
+            <br></br>
             {/* Order Details */}
             <OrderDetails campDetail={campDetail} />
           </Card>
@@ -344,9 +424,9 @@ const CampaignDetail = (props) => {
     </Container>
   );
 };
-const mapStateToProps = (state) => {
-  return {
-    user: state.authReducer.activeUser,
-  };
-};
-export default connect(mapStateToProps)(CampaignDetail);
+// const mapStateToProps = (state) => {
+//   return {
+//     user: state.authReducer.activeUser,
+//   };
+// };
+export default CampaignDetail;
