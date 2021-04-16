@@ -16,7 +16,9 @@ const AuthGuard = (props) => {
           </>
         ) : (
           <>
-            {toast.error("You are not Authenticated, Please Login !!")}
+            {props.path !== "/"
+              ? toast.error("You are not Authenticated, Please Login !!")
+              : toast.info("Logged Out !!")}
             <Redirect to={{ pathname: "/" }}></Redirect>
           </>
         )

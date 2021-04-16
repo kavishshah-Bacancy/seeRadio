@@ -55,7 +55,7 @@ export const login = (email, password) => {
           role: res.personData.roleCode,
         };
         localStorage.setItem("personalInfo", JSON.stringify(personData));
-        toast.info("Successfully loggedIn");
+        toast.success("Successfully loggedIn");
         dispatch(authSuccess(res.token, personData));
       })
       .catch((error) => {
@@ -63,34 +63,11 @@ export const login = (email, password) => {
         toast.error(error.errorMessage);
         dispatch(authFail(error.errorMessage));
       });
-    // axios
-    //   .post("http://localhost:3000/pub/login", authData)
-    //   .then((res) => {
-    //     console.log(res.data);
-    //     localStorage.setItem("token", res.data.data.token);
-    //     let personData = {
-    //       id: res.data.data.personData.id,
-    //       email: res.data.data.personData.email,
-    //       firstName: res.data.data.personData.firstName,
-    //       lastName: res.data.data.personData.lastName,
-    //       role: res.data.data.personData.roleCode,
-    //     };
-    //     //localStorage.setItem("personalInfo", JSON.stringify(personData));
-    //     toast.info("Successfully loggedIn");
-    //     dispatch(authSuccess(res.data.data.token, personData));
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response.data.errorMessage);
-    //     dispatch(authFail(error.response.data.errorMessage));
-    //   });
   };
 };
 
 export const logout = () => {
   return (dispatch) => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("id");
-    localStorage.removeItem("personalInfo");
     dispatch(authLogout());
   };
 };

@@ -10,7 +10,7 @@ import {
   FaUserCircle,
   FaPlus,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   Collapse,
   Navbar,
@@ -32,6 +32,7 @@ import * as actions from "../../store/actions/index";
 import { connect } from "react-redux";
 
 const NavBar = (props) => {
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const personInfo = JSON.parse(localStorage.getItem("personalInfo"));
@@ -74,7 +75,16 @@ const NavBar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem>
-                  <Link className="nav-link" onClick={() => props.onLogout()}>
+                  <Link
+                    className="nav-link"
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("id");
+                      localStorage.removeItem("personalInfo");
+                      history.push("/");
+                      props.onLogout();
+                    }}
+                  >
                     <FaSignOutAlt style={{ color: "rgb(228, 36, 68)" }} />
                     &nbsp;Signout
                   </Link>

@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthGuard from "./component/AuthGuard/authGuard";
 import NotFoundPage from "./pages/NotFoundPage/notFoundPage";
+import PeopleDetailModal from "./pages/Campaign/VideosInProduction/PersonDetailModal/personDetailModal";
 
 toast.configure();
 function App(props) {

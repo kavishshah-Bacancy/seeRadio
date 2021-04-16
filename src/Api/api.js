@@ -5,6 +5,11 @@ export const loginApi = (data) => helperFun.publicPostCall("/pub/login", data);
 //get Apis
 export const getCountry = () => helperFun.publicGet("/pub/country");
 
+export const getPersonDetailByID = (id) =>
+  helperFun.getWithToken(
+    `/api/person/get/${id}`,
+    localStorage.getItem("token")
+  );
 export const getStates = (stateVal) =>
   helperFun.publicGet(`/pub/states/${stateVal}`);
 

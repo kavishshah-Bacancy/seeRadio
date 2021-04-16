@@ -13,13 +13,34 @@ import "./videosInProduction.css";
 import { Card, Col, Button, Row, Table } from "reactstrap";
 import { InputGroup, InputGroupAddon, InputGroupText, Input } from "reactstrap";
 import { FaFilter, FaArrowDown, FaArrowUp } from "react-icons/fa";
-import { getAllcampaigns } from "../../../Api/api";
+import { getAllcampaigns, getPersonDetailByID } from "../../../Api/api";
 import Spinner from "../../../component/Spinner/spinner";
+import PersonDetailModal from "./PersonDetailModal/personDetailModal";
+import { Link } from "react-router-dom";
+import OverlaySpinner from "../../../component/OverlaySpinner/overlaySpinner";
 
 const VideosInProduction = () => {
   const [data, setCampaign] = useState([]);
   const [count, setCount] = useState(0);
   const [spinner, setSpinner] = useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [person, setPersonDetail] = useState(null);
+  const [company, setCompanyDetail] = useState(null);
+  const [modalSpinner, setModalSpinner] = useState(false);
+  function openModal(id) {
+    setModalSpinner(true);
+    getPersonDetailByID(id).then((res) => {
+      setPersonDetail(res.person);
+      setCompanyDetail(res.companyData);
+      setModalSpinner(false);
+    });
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
   useEffect(() => {
     setSpinner(true);
     getAllcampaigns()
@@ -33,39 +54,123 @@ const VideosInProduction = () => {
         setSpinner(false);
       });
   }, []);
-  const columns = useMemo(() => COLUMNS, []);
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Id",
+        accessor: "clientCampaignNumber",
+      },
+      {
+        Header: "Title/Details",
+        accessor: "title",
+        Cell: (col) => {
+          return (
+            <>
+              <Link to={`CampaignDetail/${col.cell.row.original.id}`}>
+                <strong>{col.value}</strong>
+              </Link>
+              <p>{col.cell.row.original.description}</p>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Advertiser",
+        accessor: "clientCompany.companyName",
+      },
+      {
+        Header: "Action Required By",
+        accessor: "statusWithPerson",
+        Cell: (col) => {
+          return (
+            <>
+              <button
+                onClick={(id) => openModal(col.value.id)}
+                class="btn btn-link"
+              >
+                {col.value.firstName} {col.value.lastName}
+              </button>
+              <p style={{ marginLeft: "5%" }}>({col.value.roleCode})</p>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Next Action Due By",
+        accessor: "statusDueDate",
+        Cell: (col) => {
+          return (
+            <p>
+              <strong>Not Selected</strong>
+            </p>
+          );
+        },
+      },
+      {
+        Header: "Progress",
+        accessor: "",
+        Cell: (col) => {
+          return (
+            <p>
+              <strong>Not Selected</strong>
+            </p>
+          );
+        },
+      },
+      {
+        Header: "Start Date",
+        accessor: "startDate",
+        Cell: (col) => {
+          return (
+            <p>
+              <strong>Not Selected</strong>
+            </p>
+          );
+        },
+      },
+    ],
+    []
+  );
   //const data = useMemo(() => campaign, []);
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    footerGroups,
     page, // so now instead of rows now we destructured page
     nextPage,
     previousPage,
     canNextPage, //Boolean , use for disbale next page btn
     canPreviousPage, //Boolean , use for disbale previous page btn
-    gotoPage,
-    pageCount,
-    pageOptions,
-
     setPageSize,
     prepareRow,
     state,
-    setGlobalFilter,
   } = useTable(
     {
       columns,
       data,
+      initialState: { pageIndex: 0, pageSize: 5 },
     },
     useGlobalFilter,
     useSortBy,
     usePagination
   );
 
-  const { globalFilter, pageIndex, pageSize } = state;
+  const { pageIndex } = state;
   return (
     <>
+      {person !== null && company !== null ? (
+        <PersonDetailModal
+          modalIsOpen={modalIsOpen}
+          closeModal={closeModal}
+          openModal={openModal}
+          person={person}
+          companyData={company}
+        />
+      ) : (
+        <Spinner />
+      )}
+
       <Col>
         <Card style={{ padding: "30px" }}>
           <Row>
@@ -91,57 +196,61 @@ const VideosInProduction = () => {
           </Row>
           <br></br>
           {/* <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} /> */}
-          <Table {...getTableProps()} striped borderless>
-            <thead
-              style={{
-                backgroundColor: "white",
-                boxShadow: "5px 5px 10px",
-              }}
-            >
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                    >
-                      {column.render("Header")}
-                      <span>
-                        {column.isSorted ? (
-                          column.isSortedDesc ? (
-                            <FaArrowDown />
-                          ) : (
-                            <FaArrowUp />
-                          )
-                        ) : (
-                          ""
+          <div style={{ overflow: "scroll" }}>
+            <Table {...getTableProps()} striped borderless>
+              <thead
+                style={{
+                  backgroundColor: "white",
+                  boxShadow: "5px 5px 10px",
+                }}
+              >
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => (
+                      <th
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
                         )}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            {spinner ? (
-              <Spinner />
-            ) : (
-              <tbody {...getTableBodyProps()}>
-                {page.map((row) => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <td {...cell.getCellProps()}>
-                            {cell.render("Cell")}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            )}
-          </Table>
+                      >
+                        {column.render("Header")}
+                        <span>
+                          {column.isSorted ? (
+                            column.isSortedDesc ? (
+                              <FaArrowDown />
+                            ) : (
+                              <FaArrowUp />
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              {spinner ? (
+                <Spinner />
+              ) : (
+                <tbody {...getTableBodyProps()}>
+                  {page.map((row) => {
+                    prepareRow(row);
+                    return (
+                      <tr {...row.getRowProps()}>
+                        {row.cells.map((cell) => {
+                          return (
+                            <td {...cell.getCellProps()}>
+                              {cell.render("Cell")}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              )}
+            </Table>
+          </div>
         </Card>
       </Col>
       {spinner ? null : (
