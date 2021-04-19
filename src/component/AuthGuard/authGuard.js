@@ -8,7 +8,7 @@ const AuthGuard = (props) => {
   return (
     <Route
       path={props.path}
-      render={(data) =>
+      render={() =>
         localStorage.getItem("token") !== null ? (
           <>
             <NavBar />
