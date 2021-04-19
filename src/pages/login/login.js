@@ -17,11 +17,13 @@ import InputField from "../../component/FormElements/InputField";
 import { Validators } from "../../component/Validator/Validator";
 import InputFieldIcon from "../../component/FormElements/InputFieldIcon";
 import * as actions from "../../store/actions/index";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
 const Login = (props) => {
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.authReducer);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -33,10 +35,9 @@ const Login = (props) => {
   };
 
   const handleSubmit = () => {
-    props.onLogin(loginData.email, loginData.password);
+    dispatch(actions.login(loginData.email, loginData.password));
   };
-
-  if (props.isAuthenticated) {
+  if (token) {
     history.push("/dashboard");
   }
   return (
@@ -130,15 +131,16 @@ const Login = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    isAuthenticated: state.authReducer.token !== null,
-    error: state.authReducer.error,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onLogin: (email, password) => dispatch(actions.login(email, password)),
-  };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+// const mapStateToProps = (state) => {
+//   return {
+//     isAuthenticated: state.authReducer.token !== null,
+//     error: state.authReducer.error,
+//   };
+// };
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onLogin: (email, password) => dispatch(actions.login(email, password)),
+//   };
+// };
+
+export default Login;
